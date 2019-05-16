@@ -1,17 +1,23 @@
 package com.monical;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
+import com.google.common.base.Splitter;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
-import org.apache.hadoop.yarn.util.StringHelper;
+import org.apache.commons.lang.time.DateUtils;
 import org.junit.Test;
+import sun.misc.Signal;
+import sun.misc.SignalHandler;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author zijie.cao
@@ -21,12 +27,56 @@ public class Test2 {
     static final int MAXIMUM_CAPACITY = 1 << 30;
 
     @Test
-    public void testBigDecimalCompare() {
-            BigDecimal bg = new BigDecimal("20.00");
-            BigDecimal bg2 = new BigDecimal("20.00");
-            System.out.println(bg.equals(bg2));
+    public void test1() throws InterruptedException {
+        System.out.println(new Date().before(new Date()));
+        Date d1 = new Date();
+        for(int i=0;i<100000;i++){}
+        // TimeUnit.SECONDS.sleep(1);
+        Date d2 = new Date();
+        System.out.println(d1.before(d2));
 
-        List<String>list = new ArrayList<>();
+        boolean d = d1 == null ? true : d1.before(new Date());
+
+    }
+
+    @Test
+    public void testAddShutDownHook() {
+
+        Signal signal = new Signal("USR2");
+        Signal.handle(signal, new SignalHandler() {
+            @Override
+            public void handle(Signal signal) {
+                // close 订阅者
+                // close thread
+                // exit
+
+            }
+        });
+    }
+
+    @Test
+    public void testStringSplit() {
+        String str = "a,,b,c,,";
+        // 需做最后一个分隔符后有无内容的检查
+        String[] ary = str.split(",");
+        // 预期大于 3，结果是 3
+        System.out.println(ary.length);
+        List<String> list = Splitter.on(",").omitEmptyStrings().splitToList(str);
+        System.out.println(list.size());
+    }
+
+    @Test
+    public void testSplit() {
+        System.out.println("".substring(0,10));
+    }
+
+    @Test
+    public void testBigDecimalCompare() {
+        BigDecimal bg = new BigDecimal("20.00");
+        BigDecimal bg2 = new BigDecimal("20.00");
+        System.out.println(bg.equals(bg2));
+
+        List<String> list = new ArrayList<>();
         System.out.println(list);
     }
 
@@ -131,7 +181,7 @@ public class Test2 {
 
         // if(o == null) return 1;
         // equals() ? 0 , -1
-        int i = Boolean.compare(o == null || o1 == null , o!= null && o.equals(o1));
+        int i = Boolean.compare(o == null || o1 == null, o != null && o.equals(o1));
         System.out.println(i);
     }
 
@@ -162,7 +212,7 @@ public class Test2 {
         List list = new ArrayList();
         list.add(1);
 
-        list = list.subList(0,0);
+        list = list.subList(0, 0);
 
         System.out.println(list);
     }
@@ -204,19 +254,3 @@ public class Test2 {
 
 }
 
-class Magic {
-    private static Magic instance = new Magic();
-    private static int count = 1;
-
-    private Magic() {
-        System.out.println(count);
-    }
-
-    public static Magic getInstance() {
-        return instance;
-    }
-
-    public static void main(String[] args) {
-        // Magic.getInstance();
-    }
-}
